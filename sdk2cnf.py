@@ -32,7 +32,7 @@ parser.add_argument(dest="sudoku_file", metavar="<sudoku_file>",
                     help="file containing the sudoku grid")
 
 parser.add_argument("-s", dest="N", metavar="<sudoku_size>", default=9,
-                    help="size of the sudoku grid, default is 9")
+                    type=int, help="size of the sudoku grid, default is 9")
 
 args = parser.parse_args()
 
@@ -52,6 +52,24 @@ def print_cls(cls):
 
 ##### MAIN #####
 
+# Init the values
+VALUES = {}
+VALUES["."] = -1
+
+if args.N == 16:
+   for val in range(10):
+      VALUES[str(val)] = val + 1
+   VALUES["A"] = 11
+   VALUES["B"] = 12
+   VALUES["C"] = 13
+   VALUES["D"] = 14
+   VALUES["E"] = 15
+   VALUES["F"] = 16
+else:
+   for val in range(1, args.N + 1):
+      VALUES[str(val)] = val
+
+
 # Parsing the input file containing the Sudoku grid
 fd    = open(args.sudoku_file)
 lines = fd.read().splitlines()
@@ -60,13 +78,13 @@ fd.close()
 grid = [[] for i in range(args.N)]
 
 for i in range(args.N):
-   grid[i] = [int(val) for val in lines[i].replace(".", "0")]
+   grid[i] = [VALUES[key] for key in lines[i]]
 
 n_assumptions = 0
 
 for i in range(args.N):
    for j in range(args.N):
-      if grid[i][j] != 0:
+      if grid[i][j] != VALUES["."]:
          n_assumptions += 1
 
 
@@ -79,7 +97,7 @@ n_cls += int((args.N ** 2) * ((args.N * (args.N - 1)) / 2))
 n_cls += int((args.N ** 2) * ((args.N * (args.N - 1)) / 2))
 n_cls += n_assumptions
 
-print("p cnf ", n_vars, n_cls)
+print("p cnf", n_vars, n_cls)
 
 
 # Generate clauses forcing at least one digit per square
@@ -130,7 +148,7 @@ for i in range(args.N):
    for j in range(args.N):
       k = grid[i][j]
 
-      if k == 0:
+      if k == VALUES["."]:
          continue
 
       unit_cls = [var_encoding(i, j, k)]
