@@ -32,7 +32,7 @@ parser.add_argument(dest="sudoku_file", metavar="<sudoku_file>",
                     help="file containing the Sudoku grid")
 
 parser.add_argument("-s", dest="N", metavar="<sudoku_size>", default=9,
-                    help="size of the sudoku grid, default is 9")
+                    type=int, help="size of the sudoku grid, default is 9")
 
 args = parser.parse_args()
 
