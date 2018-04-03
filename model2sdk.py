@@ -33,7 +33,7 @@ parser.add_argument(dest="model_file", metavar="<model_file>",
                     help="file containing the ouput of the SAT solver")
 
 parser.add_argument("-s", dest="N", metavar="<sudoku_size>", default=9,
-                    help="size of the sudoku grid, default is 9")
+                    type=int, help="size of the sudoku grid, default is 9")
 
 args = parser.parse_args()
 
@@ -60,6 +60,22 @@ def print_sdk_grid(grid):
 
 ##### MAIN #####
 
+# Init the values
+VALUES = {}
+
+if args.N == 16:
+   for val in range(10):
+      VALUES[val + 1] = str(val)
+   VALUES[11] = "A"
+   VALUES[12] = "B"
+   VALUES[13] = "C"
+   VALUES[14] = "D"
+   VALUES[15] = "E"
+   VALUES[16] = "F"
+else:
+   for val in range(1, args.N + 1):
+      VALUES[str(val)] = val
+
 # Parsing the input file containing the enswer of the SAT solver
 fd    = open(args.model_file)
 lines = fd.read().splitlines()
@@ -84,6 +100,6 @@ for value in model[:-1]:
       continue
 
    i, j, k    = var_decoding(value)
-   grid[i][j] = k
+   grid[i][j] = VALUES[k]
 
 print_sdk_grid(grid)
