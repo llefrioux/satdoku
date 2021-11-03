@@ -43,11 +43,17 @@ args = parser.parse_args()
 def var_encoding(i, j, k):
    return (i * args.N + j) * args.N + k
 
+## Print header
+def print_header(n_vars, n_cls):
+   print(f"p cnf {n_vars} {n_cls}")
+
+## Print comment
+def print_comment(comment):
+   print(f"c {comment}")
 
 # Print a clause given as a list of literals
 def print_cls(cls):
-   cls += [0]
-   print(*cls)
+   print(*cls + [0])
 
 
 ##### MAIN #####
@@ -92,15 +98,15 @@ for i in range(args.N):
 n_vars = args.N ** 3
 
 n_cls  = args.N ** 2
-n_cls += int((args.N ** 2) * ((args.N * (args.N - 1)) / 2))
-n_cls += int((args.N ** 2) * ((args.N * (args.N - 1)) / 2))
-n_cls += int((args.N ** 2) * ((args.N * (args.N - 1)) / 2))
+n_cls += args.N ** 2 * args.N * (args.N - 1) // 2
+n_cls += args.N ** 2 * args.N * (args.N - 1) // 2
+n_cls += args.N ** 2 * args.N * (args.N - 1) // 2
 n_cls += n_assumptions
 
-print("p cnf", n_vars, n_cls)
-
+print_header(n_vars, n_cls)
 
 # Generate clauses forcing at least one digit per square
+print_comment("Forcing at least one digit per square.")
 for i in range(args.N):
    for j in range(args.N):
       cls = []
@@ -110,24 +116,27 @@ for i in range(args.N):
 
 
 # Generate clauses forcing a digit not to be twice on a line
+print_comment("Forcing a digit not to be twice on a line.")
 for i in range(args.N):
    for k in range(1, args.N + 1):
       for j1 in range(args.N):
          for j2 in range(j1 + 1, args.N):
-            cls = [-var_encoding(i, j1, k), - var_encoding(i, j2, k)]
+            cls = [-var_encoding(i, j1, k), -var_encoding(i, j2, k)]
             print_cls(cls)
 
 
 # Generate clauses forcing a digit not to be twice on a column
+print_comment("Forcing a digit not to be twice on a column.")
 for j in range(args.N):
    for k in range(1, args.N + 1):
       for i1 in range(args.N):
          for i2 in range(i1 + 1, args.N):
-            cls = [-var_encoding(i1, j, k), - var_encoding(i2, j, k)]
+            cls = [-var_encoding(i1, j, k), -var_encoding(i2, j, k)]
             print_cls(cls)
 
 
 # Generate clauses forcing a digit not to be twice in a region
+print_comment("Forcing a digit not to be twice on a region.")
 region_size = int(math.sqrt(args.N))
 for I in range(region_size):
    for J in range(region_size):
@@ -143,7 +152,8 @@ for I in range(region_size):
                   print_cls(cls)
 
 
-# Generate clauses forcing the respect of the given assumptions
+# Generate clauses forcing the respect of given assumptions
+print_comment("Forcing the respect of given assumptions")
 for i in range(args.N):
    for j in range(args.N):
       k = grid[i][j]
