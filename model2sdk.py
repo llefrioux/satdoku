@@ -74,7 +74,7 @@ if args.N == 16:
    VALUES[16] = "F"
 else:
    for val in range(1, args.N + 1):
-      VALUES[str(val)] = val
+      VALUES[val] = str(val)
 
 # Parsing the input file containing the enswer of the SAT solver
 fd    = open(args.model_file)
